@@ -1,7 +1,107 @@
 {
   "dataset_id": "day04_v3_helpdesk_group",
   "dataset_role": "group",
-  "description": "Template intentionally left empty. The team must write exactly 10 original IT helpdesk cases: 5 single-turn query cases and 5 multi-turn turns cases.",
+  "description": "10 original IT helpdesk cases authored by the team: 5 single-turn and 5 multi-turn.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_ambiguous_network_complaint",
+      "phase": "B",
+      "query": "Mạng chỗ mình dạo này chậm ghê, xử lý giúp cái.",
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "text"}}]},
+      "metadata": {"what_it_tests": "Câu mơ hồ giữa wifi service, VPN hay device network diagnostic; agent phải hỏi rõ trước khi chọn tool."}
+    },
+    {
+      "id": "G02_missing_asset_security_check",
+      "phase": "B",
+      "query": "Kiểm tra tình trạng bảo mật thiết bị của mình giúp với.",
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "text"}}]},
+      "metadata": {"what_it_tests": "Không có asset_id, agent phải hỏi lại thay vì tự đoán thiết bị."}
+    },
+    {
+      "id": "G03_compare_vpn_environments",
+      "phase": "B",
+      "query": "So sánh trạng thái VPN giữa production và staging giúp mình.",
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [
+        {"name": "check_service_status", "args": {"service": "vpn", "environment": "production"}},
+        {"name": "check_service_status", "args": {"service": "vpn", "environment": "staging"}}
+      ]},
+      "metadata": {"what_it_tests": "Phải gọi 2 lần check_service_status với environment khác nhau, không gộp thành 1 call."}
+    },
+    {
+      "id": "G04_format_only_no_refetch",
+      "phase": "B",
+      "query": "Mình đã biết VPN trên LT-204 bị AUTH_TIMEOUT rồi, chỉ cần trình bày lại thành báo cáo brief thôi, tên 'VPN incident LT-204'.",
+      "failure_type": "unnecessary_tool",
+      "expect": {"tool_calls": [{"name": "format_incident_report", "args": {"template": "brief"}}]},
+      "metadata": {"what_it_tests": "Thông tin đã có sẵn trong hội thoại, agent không được gọi lại inspect_device, chỉ format."}
+    },
+    {
+      "id": "G05_public_model_no_internal_id",
+      "phase": "B",
+      "query": "Cho mình xem driver mới nhất cho laptop Lenovo ThinkPad T14 Gen 4, không cần thông tin máy LT-204 của mình đâu.",
+      "failure_type": "wrong_boundary",
+      "expect": {"tool_calls": [{"name": "search_device_info", "args": {"manufacturer": "Lenovo", "model": "ThinkPad T14 Gen 4", "query_type": "drivers"}}]},
+      "metadata": {"what_it_tests": "Model công khai trùng asset thật LT-204; agent chỉ gửi manufacturer/model, không kèm asset_id nội bộ."}
+    },
+    {
+      "id": "G06_correct_asset_id_later_turn",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Kiểm tra phần cứng máy DT-031 giúp mình."},
+        {"role": "user", "content": "À khoan, mình nhầm, là máy LT-318 mới đúng."}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "inspect_device", "args": {"asset_id": "LT-318", "check": "hardware"}}]},
+      "metadata": {"what_it_tests": "Turn sau sửa asset_id; agent phải dùng ID mới nhất, không giữ DT-031."}
+    },
+    {
+      "id": "G07_cancel_status_check",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Kiểm tra trạng thái email production giúp mình."},
+        {"role": "user", "content": "Thôi, khỏi cần kiểm tra nữa."}
+      ],
+      "failure_type": "unnecessary_tool",
+      "expect": {"no_tool": true},
+      "metadata": {"what_it_tests": "Yêu cầu hủy ở turn sau phải thắng, agent không được gọi check_service_status."}
+    },
+    {
+      "id": "G08_policy_then_confirmed_ticket",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Chính sách ticketing quy định mức critical dùng khi nào?"},
+        {"role": "user", "content": "Vậy tạo giúp mình ticket mức critical cho máy LT-411, mô tả nguồn điện có mùi khét."},
+        {"role": "user", "content": "Đúng rồi, mình xác nhận tạo ticket đó."}
+      ],
+      "failure_type": "wrong_boundary",
+      "expect": {"tool_calls": [{"name": "create_ticket", "args": {"priority": "critical", "asset_id": "LT-411", "confirmed": true}}]},
+      "metadata": {"what_it_tests": "Tra policy rồi yêu cầu tạo ticket; sau khi user xác nhận rõ ở turn cuối, agent mới được gọi create_ticket với confirmed=true và giữ đúng priority/asset."}
+    },
+    {
+      "id": "G09_stale_confirmation_priority_change",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Mình xác nhận tạo ticket lỗi Wi-Fi máy LT-240 mức medium."},
+        {"role": "user", "content": "Khoan, đổi priority thành high và ghi thêm nghi mất kết nối liên tục."}
+      ],
+      "failure_type": "wrong_boundary",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "yes_no"}}]},
+      "metadata": {"what_it_tests": "Payload đổi priority+summary sau khi đã 'xác nhận'; confirmation cũ hết hiệu lực, phải hỏi lại."}
+    },
+    {
+      "id": "G10_multiple_assets_sequential",
+      "phase": "B",
+      "turns": [
+        {"role": "user", "content": "Kiểm tra tình trạng máy DT-087 giúp mình."},
+        {"role": "user", "content": "Bỏ DT-087 đi, giờ chỉ cần kiểm tra máy MB-012 thôi."}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "inspect_device", "args": {"asset_id": "MB-012", "check": "all"}}]},
+      "metadata": {"what_it_tests": "Turn cuối hỏi asset khác (MB-012); chỉ turn hiện tại được chấm, không lẫn DT-087 cũ."}
+    }
+  ]
 }
