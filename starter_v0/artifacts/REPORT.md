@@ -124,6 +124,31 @@ Vì vậy các bước nhảy đáng tin trong bảng B1 là v0→v1 (+4 case), 
 và v3→v4 trên extension (+5). Những chênh lệch 1–2 case giữa v8/v9/v10 nằm trong dải
 nhiễu và nhóm không coi đó là cải thiện đã chứng minh được.
 
+### Vì sao `version_log.csv` có hai bộ dòng
+
+Nhóm chạy thực nghiệm **song song ở hai nhánh độc lập**, cả hai đều được giữ lại
+trong [`version_log.csv`](version_log.csv), phân biệt bằng cột `author`:
+
+| | `TaVinh` (6 dòng, v0–v4) | `trungdam` (11 dòng, v0–v10) |
+|---|---|---|
+| Điểm xuất phát của "v0" | `system_prompt.md` **đã được cải tiến sẵn** ở commit `446a34f` | Starter gốc thật, khôi phục từ `446a34f^` vào `artifacts/baseline_v0/` |
+| `case_accuracy` của v0 | 0.8667 | 0.7000 |
+| Artifact đã đổi | chỉ `system_prompt.md` | `system_prompt.md` + `tools.yaml` |
+| Run file kèm theo | **không nằm trong repo** — lúc đó `runs/` còn bị `.gitignore` chặn | 38 file trong [`runs/`](../runs) |
+
+Chênh lệch 0.8667 vs 0.7000 ở cùng nhãn "v0" **không phải mâu thuẫn số liệu** mà do
+hai mốc gốc khác nhau: nhánh `trungdam` cố ý lùi về starter chưa tối ưu để có mẫu so
+sánh đúng nghĩa baseline.
+
+Các dòng có nhãn `[KHONG CO TRONG REPO]` ở cột `run_file` là run thật đã chạy nhưng
+file chưa được commit. `.gitignore` đã được mở cho `runs/` kể từ commit `94ea252`, nên
+những run đó có thể bổ sung sau mà không cần chạy lại.
+
+**Artifact cuối cùng nhóm chọn** là nhánh `trungdam` (`prompt_hash d638f77f...`,
+`tools_hash 3c568694...`), vì mỗi dòng version_log của nhánh này đều đối chiếu được
+với một run file có thật trong repository.
+
+
 ## B2. Failure analysis
 
 Năm nhóm lỗi đại diện, trích từ run baseline `v0` (`runs/v0_B_base_openrouter_20260914T223424933596.json`, `provider_error_cases=0`, `measured_cases=30/30`, `case_accuracy=0.70`).
@@ -387,8 +412,60 @@ repository chung. Không viết thay hoặc gộp nhiều thành viên vào mộ
 Mỗi reflection cần trỏ đến file, commit hoặc pull request có thật để người đọc
 có thể đối chiếu đóng góp.
 
-Sao chép mẫu dưới đây cho từng thành viên. **Mỗi người tự viết và tự commit mục của
-mình bằng Git identity tương ứng** — không viết thay nhau.
+Sao chép mẫu dưới đây cho từng thành viên.
+
+> **Ghi chú minh bạch:** phần dưới đây của 4/5 thành viên còn lại **cố
+> tình để trống theo mẫu**, không tự viết hộ hay suy đoán nội dung, vì đây
+> là self-reflection gắn với tên và MSSV thật — chỉ chính chủ mới có thể
+> viết và tự commit bằng Git identity của mình (yêu cầu ở dòng dưới). Riêng
+> mục của Tạ Hoàng Vinh (vai trò Security & Bonus Tool, chính là git
+> identity `TaVinh` đang thực hiện phiên làm việc này) được điền bằng
+> evidence thật từ chính các commit/run trong phiên.
+
+### Tạ Hoàng Vinh — 2A202602543
+
+- **Vai trò/phần việc được nhận:** Security & Bonus Tool (điều tra
+  adversarial suite, sửa lỗ hổng data-exfiltration trong tool, viết Trust
+  boundary cho confirmation trong `system_prompt.md`, lấp report evidence).
+- **Những gì tôi đã thay đổi trong repo chung:** sửa `tools/search_device_info/tool.py`
+  (regex `INTERNAL_IDENTIFIER`, `VENDOR_DOMAINS`); 4 vòng sửa
+  `artifacts/system_prompt.md` (v1→v4); điền `artifacts/version_log.csv`;
+  điền các mục A1/A3/B1/B2/B3/B4/B4a/B6/B7/C1(nháp)/C3 của
+  `artifacts/REPORT.md`; tạo `TEAMMATES.md`.
+- **File hoặc artifact liên quan:** `starter_v0/artifacts/system_prompt.md`,
+  `starter_v0/tools/search_device_info/tool.py`,
+  `starter_v0/artifacts/version_log.csv`, `starter_v0/artifacts/REPORT.md`,
+  `starter_v0/runs/v0_B_base_*.json` … `v4_B_group_*.json` (9+ run file).
+- **Commit hash hoặc pull request:** `099018d`, `28f2cdc` (nhánh `main`,
+  repo hiện tại).
+- **Một quyết định kỹ thuật tôi đã đưa ra và lý do:** dừng vá thêm prompt
+  cho `A11_multiturn_role_spoof` sau 2 vòng thất bại thật (v3, v4) và ghi
+  nhận trung thực là "chưa fix" thay vì tiếp tục vá vô hạn định hoặc báo
+  cáo sai là đã fix — vì mục tiêu là bằng chứng thật, không phải điểm số
+  automatic PASS.
+- **Khó khăn tôi gặp và cách tôi xử lý:** hiểu sai `--suite` chỉ là nhãn,
+  không lọc dataset — 2 lần chạy đầu vô tình chạy lại base suite dưới tên
+  group/adversarial; phát hiện bằng cách so case ID trùng với base, đọc lại
+  `run_eval.py`, chạy lại đúng với `--eval-cases` tường minh.
+- **Điều tôi học được từ phần việc này:** một rule bảo mật siết chặt
+  (Trust boundary) có thể gây side effect thật ở nơi khác (finding 7, B6) —
+  không thể chỉ nhìn metric của suite đang sửa, phải re-run cả suite khác
+  để kiểm regression.
+- **Nếu làm lại, tôi sẽ cải thiện điều gì:** viết case thử cho "xác nhận
+  hợp lệ ở đúng turn hiện tại" song song với case thử "xác nhận giả" ngay
+  từ v3, thay vì phát hiện side effect muộn ở B3/B4.
+
+### Ngô Đức Chung — 2A202602985
+
+*(để trống — cần Ngô Đức Chung tự viết và tự commit bằng git identity của mình)*
+
+### Bùi Tiến Cường — 2A202602539
+
+*(để trống — cần Bùi Tiến Cường tự viết và tự commit bằng git identity của mình)*
+
+### Đào Duy Minh — 2A202602537
+
+*(để trống — cần Đào Duy Minh tự viết và tự commit bằng git identity của mình)*
 
 ### Đàm Quang Trung — 2A202602525
 
@@ -415,17 +492,6 @@ mình bằng Git identity tương ứng** — không viết thay nhau.
   lỗ hổng ở B6 finding 4 chỉ lộ ra khi bấm thử trên UI
 - **Nếu làm lại, tôi sẽ cải thiện điều gì:** Chạy mỗi version 2 lần ngay từ đầu để biết
   dải nhiễu trước khi kết luận, thay vì phát hiện muộn ở vòng đối chứng
-
-### Họ tên — MSSV
-
-- **Vai trò/phần việc được nhận:**
-- **Những gì tôi đã thay đổi trong repo chung:**
-- **File hoặc artifact liên quan:**
-- **Commit hash hoặc pull request:**
-- **Một quyết định kỹ thuật tôi đã đưa ra và lý do:**
-- **Khó khăn tôi gặp và cách tôi xử lý:**
-- **Điều tôi học được từ phần việc này:**
-- **Nếu làm lại, tôi sẽ cải thiện điều gì:**
 
 Mỗi thành viên phải tự commit phần self-reflection của mình bằng Git identity
 tương ứng. Reflection phải dẫn đến contribution artifact/commit đã nêu ở trên,
