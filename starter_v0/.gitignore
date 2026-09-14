@@ -5,7 +5,12 @@ __pycache__/
 .env
 .env.*
 !.env.example
+# Generated tickets: README cam ket khong nop -> luon chan
 /tickets/
-/runs/
-/transcripts/
 /analysis/
+
+# Runtime log cua UI (chua IP may chay) -> khong nop
+streamlit.log
+
+# runs/ va transcripts/ la deliverable bat buoc (README) -> KHONG chan.
+# Chi commit file evidence duoc dan trong REPORT.md.

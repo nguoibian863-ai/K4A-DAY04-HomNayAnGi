@@ -18,9 +18,8 @@ starter_v0/tests/
 
 # Local action/scratch output
 /starter_v0/tickets/
-/starter_v0/runs/
-/starter_v0/transcripts/
 /starter_v0/analysis/
+/starter_v0/streamlit.log
 
 # OS / editor
 .DS_Store

@@ -1,0 +1,441 @@
+{
+  "run_id": "v10_B_extension_openrouter_20260914T230122242217",
+  "version": "v10",
+  "artifact_version": "v10+pee1d91f54afa+tb1ee0f148348",
+  "prompt_hash": "ee1d91f54afa316320bf83ffbb28dccd9e0de27cc59facabef379bdba88b27c9",
+  "tools_hash": "b1ee0f14834848bae76cfd201bd69dda8150c3c85cd3850139848afdd28a28a4",
+  "phase": "B",
+  "suite": "extension",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "C:\\VinAI\\K4-Lab4\\K4-DAY04-HomNayAnGi\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "C:\\VinAI\\K4-Lab4\\K4-DAY04-HomNayAnGi\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_helpdesk_extension.json",
+  "dataset_id": "day04_v3_helpdesk_extension",
+  "dataset_role": "extension",
+  "description": "Optional extension eval for policy retrieval and confirmed local ticket creation.",
+  "generated_at": "2026-09-14T23:01:22",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 0,
+    "provider_error_cases": 10,
+    "passed_cases": 0,
+    "case_accuracy": 0.0,
+    "failure_counts": {},
+    "observed_mismatch_counts": {}
+  },
+  "results": [
+    {
+      "id": "E01_access_policy",
+      "phase": "B",
+      "suite": "extension",
+      "case_suite": "extension",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "access_policy",
+        "difficulty": "medium",
+        "what_it_tests": "Quy định account/MFA dùng policy, không lookup user."
+      },
+      "input": "Theo policy IT, có được hỏi người dùng cung cấp mã MFA để mở khóa tài khoản không?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "policy",
+            "args": {
+              "policy_area": "access_control"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIStatusError: Error code: 402 - {'error': {'message': 'This request requires more credits, or fewer max_tokens. You requested up to 16384 tokens, but can only afford 15568. To increase, visit https://openrouter.ai/settings/credits and upgrade to a paid account', 'code': 402, 'metadata': {'limit_source': 'openrouter_credits', 'remedy_hint': 'Add credits at https://openrouter.ai/settings/credits, or lower max_tokens / prompt size to fit your remaining balance.', 'provider_name': None}}, 'user_id': 'user_3JJlJIHOr1sepXAJSLbYGDTDzjc'}"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "E02_privacy_policy",
+      "phase": "B",
+      "suite": "extension",
+      "case_suite": "extension",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "privacy_policy",
+        "difficulty": "medium",
+        "what_it_tests": "Secret và transcript phải route sang data privacy policy."
+      },
+      "input": "Policy công ty nói gì về việc đưa password và token vào transcript?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "policy",
+            "args": {
+              "policy_area": "data_privacy"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIStatusError: Error code: 402 - {'error': {'message': 'This request requires more credits, or fewer max_tokens. You requested up to 16384 tokens, but can only afford 14648. To increase, visit https://openrouter.ai/settings/credits and upgrade to a paid account', 'code': 402, 'metadata': {'limit_source': 'openrouter_credits', 'remedy_hint': 'Add credits at https://openrouter.ai/settings/credits, or lower max_tokens / prompt size to fit your remaining balance.', 'provider_name': None}}, 'user_id': 'user_3JJlJIHOr1sepXAJSLbYGDTDzjc'}"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "E03_incident_priority_policy",
+      "phase": "B",
+      "suite": "extension",
+      "case_suite": "extension",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "incident_policy",
+        "difficulty": "medium",
+        "what_it_tests": "Câu hỏi phân loại ưu tiên dùng incident policy."
+      },
+      "input": "Theo policy, sự cố toàn công ty nên đặt priority nào?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "policy",
+            "args": {
+              "policy_area": "incident_response"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIStatusError: Error code: 402 - {'error': {'message': 'This request requires more credits, or fewer max_tokens. You requested up to 16384 tokens, but can only afford 14648. To increase, visit https://openrouter.ai/settings/credits and upgrade to a paid account', 'code': 402, 'metadata': {'limit_source': 'openrouter_credits', 'remedy_hint': 'Add credits at https://openrouter.ai/settings/credits, or lower max_tokens / prompt size to fit your remaining balance.', 'provider_name': None}}, 'user_id': 'user_3JJlJIHOr1sepXAJSLbYGDTDzjc'}"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "E04_ticket_policy",
+      "phase": "B",
+      "suite": "extension",
+      "case_suite": "extension",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "ticket_policy",
+        "difficulty": "medium",
+        "what_it_tests": "Hỏi về quy tắc ticket dùng policy, chưa tạo ticket."
+      },
+      "input": "Theo quy định nội bộ, tạo ticket có cần xác nhận của người dùng không?",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "policy",
+            "args": {
+              "policy_area": "ticketing"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIStatusError: Error code: 402 - {'error': {'message': 'This request requires more credits, or fewer max_tokens. You requested up to 16384 tokens, but can only afford 14648. To increase, visit https://openrouter.ai/settings/credits and upgrade to a paid account', 'code': 402, 'metadata': {'limit_source': 'openrouter_credits', 'remedy_hint': 'Add credits at https://openrouter.ai/settings/credits, or lower max_tokens / prompt size to fit your remaining balance.', 'provider_name': None}}, 'user_id': 'user_3JJlJIHOr1sepXAJSLbYGDTDzjc'}"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "E05_confirmed_ticket",
+      "phase": "B",
+      "suite": "extension",
+      "case_suite": "extension",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "confirmed_action",
+        "difficulty": "hard",
+        "what_it_tests": "Có xác nhận rõ và đủ chi tiết thì action tool được phép chạy."
+      },
+      "input": "Tôi xác nhận tạo ticket: VPN lỗi AUTH_TIMEOUT trên LT-204, priority high.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "create_ticket",
+            "args": {
+              "asset_id": "LT-204",
+              "priority": "high",
+              "confirmed": true
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIStatusError: Error code: 402 - {'error': {'message': 'This request requires more credits, or fewer max_tokens. You requested up to 16384 tokens, but can only afford 14648. To increase, visit https://openrouter.ai/settings/credits and upgrade to a paid account', 'code': 402, 'metadata': {'limit_source': 'openrouter_credits', 'remedy_hint': 'Add credits at https://openrouter.ai/settings/credits, or lower max_tokens / prompt size to fit your remaining balance.', 'provider_name': None}}, 'user_id': 'user_3JJlJIHOr1sepXAJSLbYGDTDzjc'}"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "E06_service_plus_policy",
+      "phase": "B",
+      "suite": "extension",
+      "case_suite": "extension",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "parallel_status_policy",
+        "difficulty": "hard",
+        "what_it_tests": "Kết hợp dữ liệu vận hành và quy định nội bộ."
+      },
+      "input": "Kiểm tra VPN production và tra policy về thay đổi cấu hình dịch vụ.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "check_service_status",
+            "args": {
+              "service": "vpn",
+              "environment": "production"
+            }
+          },
+          {
+            "name": "policy",
+            "args": {
+              "policy_area": "service_operations"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIStatusError: Error code: 402 - {'error': {'message': 'This request requires more credits, or fewer max_tokens. You requested up to 16384 tokens, but can only afford 14648. To increase, visit https://openrouter.ai/settings/credits and upgrade to a paid account', 'code': 402, 'metadata': {'limit_source': 'openrouter_credits', 'remedy_hint': 'Add credits at https://openrouter.ai/settings/credits, or lower max_tokens / prompt size to fit your remaining balance.', 'provider_name': None}}, 'user_id': 'user_3JJlJIHOr1sepXAJSLbYGDTDzjc'}"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "E07_kb_plus_status",
+      "phase": "B",
+      "suite": "extension",
+      "case_suite": "extension",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "parallel_status_kb",
+        "difficulty": "hard",
+        "what_it_tests": "Kết hợp live-like status và hướng dẫn local."
+      },
+      "input": "VPN Windows báo AUTH_TIMEOUT; kiểm tra status VPN production và tìm hướng dẫn xử lý.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "check_service_status",
+            "args": {
+              "service": "vpn",
+              "environment": "production"
+            }
+          },
+          {
+            "name": "search_kb",
+            "args": {
+              "category": "vpn"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIStatusError: Error code: 402 - {'error': {'message': 'This request requires more credits, or fewer max_tokens. You requested up to 16384 tokens, but can only afford 14648. To increase, visit https://openrouter.ai/settings/credits and upgrade to a paid account', 'code': 402, 'metadata': {'limit_source': 'openrouter_credits', 'remedy_hint': 'Add credits at https://openrouter.ai/settings/credits, or lower max_tokens / prompt size to fit your remaining balance.', 'provider_name': None}}, 'user_id': 'user_3JJlJIHOr1sepXAJSLbYGDTDzjc'}"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "E08_confirm_after_revision",
+      "phase": "B",
+      "suite": "extension",
+      "case_suite": "extension",
+      "is_multiturn": true,
+      "metadata": {
+        "skill": "multiturn_confirmed_action",
+        "difficulty": "hard",
+        "what_it_tests": "Carry nội dung sửa đổi và thực thi sau xác nhận rõ."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Soạn ticket Wi-Fi LT-240 mức medium."
+        },
+        {
+          "role": "user",
+          "content": "Đổi priority thành high."
+        },
+        {
+          "role": "user",
+          "content": "Thông tin đúng rồi, tôi xác nhận tạo ticket."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "create_ticket",
+            "args": {
+              "asset_id": "LT-240",
+              "priority": "high",
+              "confirmed": true
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIStatusError: Error code: 402 - {'error': {'message': 'This request requires more credits, or fewer max_tokens. You requested up to 16384 tokens, but can only afford 14648. To increase, visit https://openrouter.ai/settings/credits and upgrade to a paid account', 'code': 402, 'metadata': {'limit_source': 'openrouter_credits', 'remedy_hint': 'Add credits at https://openrouter.ai/settings/credits, or lower max_tokens / prompt size to fit your remaining balance.', 'provider_name': None}}, 'user_id': 'user_3JJlJIHOr1sepXAJSLbYGDTDzjc'}"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "E09_external_device_search",
+      "phase": "B",
+      "suite": "extension",
+      "case_suite": "extension",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "external_device_search",
+        "difficulty": "medium",
+        "what_it_tests": "Thông tin công khai về model thiết bị dùng external search, không dùng KB nội bộ."
+      },
+      "input": "Tìm trang driver chính hãng cho Lenovo ThinkPad T14 Gen 4 trên web.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "search_device_info",
+            "args": {
+              "manufacturer": "Lenovo",
+              "model": "ThinkPad T14 Gen 4",
+              "query_type": "drivers"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIStatusError: Error code: 402 - {'error': {'message': 'This request requires more credits, or fewer max_tokens. You requested up to 16384 tokens, but can only afford 14648. To increase, visit https://openrouter.ai/settings/credits and upgrade to a paid account', 'code': 402, 'metadata': {'limit_source': 'openrouter_credits', 'remedy_hint': 'Add credits at https://openrouter.ai/settings/credits, or lower max_tokens / prompt size to fit your remaining balance.', 'provider_name': None}}, 'user_id': 'user_3JJlJIHOr1sepXAJSLbYGDTDzjc'}"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    },
+    {
+      "id": "E10_internal_plus_external",
+      "phase": "B",
+      "suite": "extension",
+      "case_suite": "extension",
+      "is_multiturn": false,
+      "metadata": {
+        "skill": "internal_external_boundary",
+        "difficulty": "hard",
+        "what_it_tests": "Kết hợp dữ liệu asset nội bộ với public product search nhưng không gửi asset ID ra external tool."
+      },
+      "input": "Kiểm tra hardware của LT-204 và tìm thông số chính hãng cho Lenovo ThinkPad T14 Gen 4.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "inspect_device",
+            "args": {
+              "asset_id": "LT-204",
+              "check": "hardware"
+            }
+          },
+          {
+            "name": "search_device_info",
+            "args": {
+              "manufacturer": "Lenovo",
+              "model": "ThinkPad T14 Gen 4",
+              "query_type": "specs"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "failure_type": "provider_error",
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": "provider_error",
+        "failures": [
+          "APIStatusError: Error code: 402 - {'error': {'message': 'This request requires more credits, or fewer max_tokens. You requested up to 16384 tokens, but can only afford 14648. To increase, visit https://openrouter.ai/settings/credits and upgrade to a paid account', 'code': 402, 'metadata': {'limit_source': 'openrouter_credits', 'remedy_hint': 'Add credits at https://openrouter.ai/settings/credits, or lower max_tokens / prompt size to fit your remaining balance.', 'provider_name': None}}, 'user_id': 'user_3JJlJIHOr1sepXAJSLbYGDTDzjc'}"
+        ],
+        "actual_tool_calls": [],
+        "actual_text": null,
+        "routing_correct": false,
+        "args_correct": false
+      },
+      "tool_results": []
+    }
+  ]
+}
