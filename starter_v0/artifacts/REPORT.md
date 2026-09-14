@@ -18,11 +18,18 @@
 
 ## A2. Tool agent có
 
-| Tool | Chức năng | Core / optional / team-built |
+| Tool | Chức năng (nguyên văn `description` trong `tools.yaml`) | Core / optional / team-built |
 |---|---|---|
-| clarify | Hỏi bổ sung hoặc xác nhận | core |
-| ticket_status | Tra cứu trạng thái ticket đã tạo theo ticket_id (read-only) | team-built (bonus) |
-|  |  |  |
+| clarify | Gửi một câu hỏi cho người dùng. | core |
+| search_kb | Tìm hướng dẫn hỗ trợ kỹ thuật. | core |
+| check_service_status | Dùng để tra cứu dịch vụ hạ tầng chung (VPN, Email, Printing). KHÔNG dùng tra cứu thiết bị cá nhân. | core |
+| inspect_device | Inspect and diagnose one specific company device. Use only when the user provides an explicit Asset ID or a previous tool result directly supplies one. If the Asset ID is missing, call `clarify` instead of guessing. Do not use this for shared service outages. | core |
+| lookup_user | Look up one user in the support directory. Use only when the user provides an explicit Employee ID or a previous tool result directly supplies one. If the Employee ID is missing, call `clarify` instead of guessing. | core |
+| format_incident_report | Trình bày các kết quả đã có thành báo cáo. | core |
+| search_device_info | Tìm thông tin công khai về một model thiết bị trên web. Chỉ truyền hãng, model và loại thông tin; không truyền asset ID, employee ID hoặc dữ liệu nội bộ. | optional/advanced |
+| policy | Tìm trong chính sách IT nội bộ. | optional/advanced |
+| create_ticket | Tạo một ticket hỗ trợ. | optional/advanced |
+| ticket_status | Tra cứu trạng thái một ticket đã tạo trước đó bằng ticket_id (dạng LAB-XXXXXXXX do create_ticket trả về). Chỉ đọc, không tạo hoặc sửa ticket. Dùng khi người dùng hỏi lại về ticket đã tạo, không dùng create_ticket lần nữa để kiểm tra. | team-built (bonus) |
 
 ## A3. Câu hỏi mẫu
 
