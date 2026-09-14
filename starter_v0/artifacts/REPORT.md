@@ -39,9 +39,24 @@
 
 ## A4. Kịch bản demo đã rehearse
 
+Chạy thật qua `run_model_tool_loop` (provider OpenAI, model `gpt-4o-mini`), 4
+lượt liên tiếp cùng một hội thoại. Transcript đầy đủ:
+`transcripts/demo_2026-09-14T20-05-41.demo.json`.
+
 | Scenario | Tool trace cần thấy | Cải thiện version | Fallback run/transcript |
 |---|---|---|---|
-|  |  |  |  |
+| "VPN co bi loi khong?" | `check_service_status({"service": "vpn"})` → `status=degraded`, `incident_id=INC-1042` | v0 (baseline) | `transcripts/demo_2026-09-14T20-05-41.demo.json` (turn 1) |
+| "May tinh cua toi LT-204 bi cham, kiem tra giup" | `inspect_device({"asset_id": "LT-204", "check": "all"})` → trả về Lenovo ThinkPad T14 Gen 4, VPN `AUTH_TIMEOUT` | v0 (baseline) | `transcripts/demo_2026-09-14T20-05-41.demo.json` (turn 2) |
+| "Tao ticket bao cao may LT-204 bi cham, priority cao" | `clarify({"question": "Bạn có xác nhận muốn tạo ticket...", "response_type": "yes_no"})` — **không** gọi `create_ticket` ngay, đúng ranh giới xác nhận trong `system_prompt.md` | v0 (baseline) | `transcripts/demo_2026-09-14T20-05-41.demo.json` (turn 3) |
+| "Co, toi xac nhan" | `create_ticket({"summary": "Máy tính LT-204 bị chậm", "priority": "high", "asset_id": "LT-204", "confirmed": true})` → `status=created`, `ticket_id=LAB-73A489B0` | v0 (baseline) | `transcripts/demo_2026-09-14T20-05-41.demo.json` (turn 4) |
+
+Ghi chú: `_demo_scenarios.py` là script phụ trợ để lấy evidence thật (SDK
+`openai` bị Windows Application Control chặn DLL `jiter` trong máy dùng để
+test, nên gọi trực tiếp Chat Completions HTTP API bằng `requests`); không
+phải một phần code nộp bài, không thay thế `providers/openai_provider.py`.
+Ticket test `LAB-73A489B0.json` sinh ra trong lượt demo đã bị xoá khỏi
+`tickets/` trước khi commit, theo đúng yêu cầu README không nộp dữ liệu/ticket
+generated.
 
 # PHẦN B — Chi tiết và evidence
 

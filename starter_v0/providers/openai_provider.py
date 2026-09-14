@@ -30,16 +30,10 @@ class OpenAIProvider:
         temperature: float = 0.0,
         tool_choice: Any | None = None,
     ) -> ModelResponse:
-        try:
-            from openai import OpenAI
-        except ImportError as exc:
-            raise RuntimeError("Install live provider dependency first: pip install openai") from exc
-
         api_key = os.getenv(self.api_key_env)
         if not api_key:
             raise RuntimeError(f"Missing API key env var: {self.api_key_env}")
 
-        client = OpenAI(api_key=api_key, base_url=self.base_url)
         kwargs: dict[str, Any] = {
             "model": model or self.default_model,
             "messages": messages,
@@ -50,10 +44,42 @@ class OpenAIProvider:
         if tool_choice is not None:
             kwargs["tool_choice"] = tool_choice
 
-        resp = client.chat.completions.create(**kwargs)
+        try:
+            from openai import OpenAI
+
+            client = OpenAI(api_key=api_key, base_url=self.base_url)
+            resp = client.chat.completions.create(**kwargs)
+        except ImportError:
+            # Fallback for environments where the `openai` SDK's `chat` submodule
+            # cannot be imported (e.g. its native `jiter` extension is blocked by
+            # a local Windows Application Control / WDAC policy — this raises
+            # ImportError lazily, on first access to `client.chat`, not on
+            # `from openai import OpenAI` itself). Calls the same OpenAI Chat
+            # Completions HTTP endpoint directly with `requests`, so behavior is
+            # otherwise identical to the SDK path above.
+            return self._complete_via_http(api_key, kwargs)
+
         msg = resp.choices[0].message
         calls: list[ToolCall] = []
         for call in msg.tool_calls or []:
             args = json.loads(call.function.arguments or "{}")
             calls.append(ToolCall(name=call.function.name, args=args))
         return ModelResponse(text=msg.content, tool_calls=calls, raw=resp)
+
+    def _complete_via_http(self, api_key: str, kwargs: dict[str, Any]) -> ModelResponse:
+        import requests
+
+        resp = requests.post(
+            (self.base_url or "https://api.openai.com/v1") + "/chat/completions",
+            json=kwargs,
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            timeout=60,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        msg = data["choices"][0]["message"]
+        calls: list[ToolCall] = []
+        for call in msg.get("tool_calls") or []:
+            args = json.loads(call["function"].get("arguments") or "{}")
+            calls.append(ToolCall(name=call["function"]["name"], args=args))
+        return ModelResponse(text=msg.get("content"), tool_calls=calls, raw=data)
