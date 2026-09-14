@@ -390,7 +390,7 @@ có thể đối chiếu đóng góp.
 Sao chép mẫu dưới đây cho từng thành viên. **Mỗi người tự viết và tự commit mục của
 mình bằng Git identity tương ứng** — không viết thay nhau.
 
-### Đàm Trung — `<MSSV>`
+### Đàm Quang Trung — 2A202602525
 
 - **Vai trò/phần việc được nhận:** Chạy vòng lặp thực nghiệm và dựng evidence
 - **Những gì tôi đã thay đổi trong repo chung:** Khôi phục baseline v0 thật từ lịch sử
