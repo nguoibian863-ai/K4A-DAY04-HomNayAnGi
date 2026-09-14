@@ -15,6 +15,7 @@ VENDOR_DOMAINS = {
     "dell": ["dell.com"],
     "hp": ["support.hp.com"],
     "hewlett-packard": ["support.hp.com"],
+    "apple": ["support.apple.com"],
 }
 QUERY_LABELS = {
     "specs": "technical specifications",
@@ -22,7 +23,10 @@ QUERY_LABELS = {
     "support": "support documentation",
     "compatibility": "hardware and operating system compatibility",
 }
-INTERNAL_IDENTIFIER = re.compile(r"\b(?:LT|DT|MB|PR|RM|EMP)-\d+\b", re.IGNORECASE)
+# NOTE: hyphen is optional (`-?`) so identifiers typed without it (LT204, EMP1001)
+# are still caught. Previously the pattern required a literal "-", which let
+# internal asset/employee IDs bypass the filter and leak to the external search API.
+INTERNAL_IDENTIFIER = re.compile(r"\b(?:LT|DT|MB|PR|RM|EMP)-?\d+\b", re.IGNORECASE)
 
 
 def _domain(url: str) -> str:
@@ -42,6 +46,12 @@ def _safe_external_text(value: str) -> tuple[str, list[str]]:
 
 
 def _allowed_official_domain(result_domain: str, official_domains: list[str]) -> bool:
+    # NOTE: previously returned True (allow everything) when no allowlist was
+    # known for the manufacturer, which meant unlisted vendors got zero domain
+    # filtering (e.g. unofficial third-party sites passed through unchecked).
+    # Results are still returned for unlisted vendors, but each item is now
+    # tagged `vendor_domain_verified: False` (see below) instead of silently
+    # trusting every domain.
     if not official_domains:
         return True
     return any(result_domain == allowed or result_domain.endswith(f".{allowed}") for allowed in official_domains)
@@ -116,6 +126,7 @@ def search_device_info(
                 "summary": safe_summary,
                 "score": item.get("score"),
                 "untrusted_text": [*title_injection, *summary_injection],
+                "vendor_domain_verified": bool(official_domains),
             })
         return {
             "tool": "search_device_info",
