@@ -1,0 +1,11 @@
+# Khoá giao diện về dark theme để bảng màu trong app.py luôn khớp,
+# không phụ thuộc theme của trình duyệt người xem.
+[theme]
+base = "dark"
+primaryColor = "#4d6bfe"
+backgroundColor = "#131314"
+secondaryBackgroundColor = "#1c1d1f"
+textColor = "#e8eaed"
+
+[browser]
+gatherUsageStats = false
